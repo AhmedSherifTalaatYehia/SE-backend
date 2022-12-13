@@ -55,6 +55,7 @@ router.delete('/:id', async (req, res)=> {
   try {
     const query = `delete from employee where id=${req.params.id}`;
     const result = await db.raw(query);
+    console.log(req.params.id);
     res.send("deleted succesfully");
   } catch (err) {
     console.log("eror message", err.message);
