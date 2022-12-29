@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>transfer</title>
+    <link rel='stylesheet' href='/styles/bootstrap.min.css' />
+    <link rel='stylesheet' href='/styles/style.css' />
+    <script src="/js/jquery-2.2.0.min.js" type="text/javascript"></script>
+    <script src="/js/bootstrap.min.js" type="text/javascript"></script>
+  </head>
+  <body>
+      <script>
+        $(document).ready(function(){
+        // Handle Autocomplete Selection Change
+        $(".dropdown-menu li a").click(function(){
+        const index = $(this).attr('index');
+        $("#facultyDropdown").attr('index', index);
+        $("#facultyDropdown").text($(this).text());
+        });
+
+         $("#register").click(function() {
+
+            const facultyId = $("#facultyDropdown").attr('index');
+            if(facultyId == 0){
+              alert("you need to select a faculty");
+              return;
+            }
+            const data = {
+              newFacultyId : facultyId
+            };
+
+            $.ajax({
+              type: "POST",
+              url: '/api/v1/faculties/transfer',
+              data,
+              success: function(serverResponse) {
+                if(serverResponse) {
+                  alert('Successfully submit transfer');
+                  location.href = '/transfer';
+                }
+              },
+              error: function(errorResponse) {
+                if(errorResponse) {
+                  alert(`Error User: ${errorResponse.responseText}`);
+                }            
+              }
+            });
+
+
+
+
+          })
+        })
+      </script>
+       <nav class="navbar navbar-inverse" style="padding-left:130px;">
+          <ul class="nav navbar-nav">
+            <li><a href="/dashboard">Home</a></li>
+            <li><a href="/transcripts">Transcript</a></li>
+            <li><a href="/courses">Courses</a></li>
+            <li class="active"><a href="/transfer">Transfer Requests</a></li>
+            <li><a href="/">Logout</a></li>
+          </ul>
+       </nav>
+            {{#transFlag}}
+        <table class="table">
+        <thead>
+          <tr>
+            <th scope="col">ID</th>
+            <th scope="col">Current Faculty</th>
+            <th scope="col">New Faculty</th>
+            <th scope="col">Date</th>
+            <th scope="col">Status</th>
+          </tr>
+        </thead>
+        <tbody>
+           {{#trans}}
+            <tr>
+              <td>{{id}}</td>
+              <td>{{currentFaculty}}</td>
+              <td>{{newFaculty}}</td>
+              <td>{{date}}</td>
+              <td>{{status}}</td>
+            </tr>
+          {{/trans}}
+        </tbody>
+      </table>
+      {{/transFlag}}
+       <br />
+       <br />
+       {{#nonPendingFlag}}
+      <form class="form-horizontal" style="width: 50%;padding-left: 100px">
+      <div class="form-group">
+          <label for="faculty" class="col-sm-2 control-label">Faculty</label>
+          <div class="col-sm-10">
+            <div class="btn-group">
+              <button index=0 id='facultyDropdown' class="btn">Faculties</button>
+              <button class="btn dropdown-toggle" data-toggle="dropdown">
+                <span class="caret"></span>
+              </button>
+              <ul class="dropdown-menu">
+                  {{#faculties}}
+                     <li><a index="{{id}}">{{faculty}}</a></li>
+                  {{/faculties}}              
+              </ul>
+            </div>
+          </div>
+      </div>
+      <div class="form-group">
+          <div class="col-sm-10 col-sm-offset-2">
+              <input id="register" name="register" type="button" value="Submit" class="btn btn-primary">
+          </div>
+      </div>
+  </form>
+         {{/nonPendingFlag}}
+         
+  </body>
+  </html>
