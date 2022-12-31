@@ -164,6 +164,45 @@ app.put('/api/v1/courses/:courseId', async function(req, res) {
     }
   });
 
+    app.post('/api/v1/transfers/:transferId', async function(req, res) {
+    
+    try {
+      const user = await getUser(req);
+      const newFacultyId= req.body.newFacultyId;
+      let transferObj = {
+        status : req.body.transferStatus,
+      };
+      const request = await db('se_project.transfers').update(transferObj).where('id', req.params.transferId).returning("*");
+      //console.log("request =>",request)
+      if(req.body.transferStatus == 'accepted'){
+        await db.raw(`update se_project.users 
+                     set "facultyId" = ${request[0].newFacultyId}
+                     where id = ${request[0].userId}`);
+        const courses =  await db.select('*')
+                         .from('se_project.courses')
+                         .where('facultyId', request[0].newFacultyId);
+        await db.raw(`update se_project.enrollments
+                      set active = false
+                      where "userId" = ${request[0].userId}`)
+        for(let courseObj of courses){
+          let enrollObj = {
+            userId : request[0].userId,
+            courseId : courseObj.id,
+            grade : 0,
+            active: true
+          };
+          await db('se_project.enrollments').insert(enrollObj);
+        }
+      }
+      
+      return res.status(200).send('completed request')
+    } catch (e) {
+      console.log(e.message);
+      return res.status(400).send('Could not register user');
+    }
+  });
+
+
   app.post('/api/v1/faculties/transfer', async function(req, res) {
     
     try {

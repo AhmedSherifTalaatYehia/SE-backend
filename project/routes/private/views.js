@@ -109,8 +109,8 @@ module.exports = function(app) {
       inner join se_project.faculties curr 
       on t."currentFacultyId" = curr.id 
       inner join se_project.faculties newfaculty 
-      on t."newFacultyId" = newfaculty.id
-      where t."status" = 'pending'`);
+      on t."newFacultyId" = newfaculty.id`);
+      //where t."status" = 'pending'`);
       const trans = transfer.rows;
       for(let transObj of trans){
         let date = new Date(transObj.date);

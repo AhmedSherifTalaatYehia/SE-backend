@@ -18,6 +18,7 @@
         $(".reject").click(function(){
           var id = $(this).attr("id");
           console.log("id",id)
+          $(this).parent().parent().remove();
           // /api/v1/transfers/:transferId
           $.ajax({
           type: "POST",
@@ -25,6 +26,7 @@
           data : { transferStatus : "rejected" },
           success: function(data) {
               alert("reject response")
+              //$(this).parent().parent().remove();
             },
             error: function(errorResponse) {
               if(errorResponse) {
@@ -37,6 +39,7 @@
 
          $(".approve").click(function(){
           var id = $(this).attr("id");
+          $(this).parent().parent().remove();
           console.log("id",id)
           // /api/v1/transfers/:transferId
           $.ajax({
@@ -44,7 +47,7 @@
           url: `/api/v1/transfers/${id}`,
           data : { transferStatus : "accepted" },
           success: function(data) {
-              alert("reject response")
+              alert("accept response")
             },
             error: function(errorResponse) {
               if(errorResponse) {
